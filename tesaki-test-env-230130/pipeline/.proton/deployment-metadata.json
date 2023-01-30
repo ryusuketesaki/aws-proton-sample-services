@@ -1,0 +1,10 @@
+{
+  "deploymentId" : "d725d837-9700-4e21-9ed2-8c702e6ee3d7",
+  "isResourceDeleted" : false,
+  "resourceMetadata" : {
+    "arn" : "arn:aws:proton:ap-northeast-1:808225968452:service/tesaki-test-env-230130/pipeline",
+    "templateArn" : "arn:aws:proton:ap-northeast-1:808225968452:service-template/worker-ecs-ec2-svc",
+    "templateMajorVersion" : "1",
+    "templateMinorVersion" : "0"
+  }
+}
