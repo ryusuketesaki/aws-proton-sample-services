@@ -213,20 +213,38 @@ jobs:
         # service.yamlのうち直前のbuildコマンドで作成したIMAGE_IDを更新
         pwd && ls -al && cat rendered_service.yaml
 
-    - name: proton deploy
-      id: proton_deploy
+    - name: proton create service instance
+      id: proton_create_service_instance
+      # path指定で特定のファイルが操作された場合を初回実行とみなしてcreate serviceしたい if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        echo "aws proton update-service-instance"
+        echo "aws proton create-service"
         pwd && ls -al && cat rendered_service.yaml        
-        aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} update-service-instance  \
-        --deployment-type CURRENT_VERSION \
-        --name tesaki-test-srv-0209 \
-        --service-name pipeline \
-        --spec "file://rendered_service.yaml"
+        aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} create-service  \
+        --name pipeline \
+        --branchName main \
+        --spec "file://rendered_service.yaml" \
+        --templateName load-balanced-fargate-svc-no-pipeline\
+        --templateMajorVersion 1.2
 
-        echo "aws proton wait service-instance-deployed"
-        aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} wait service-instance-deployed \
-        --name tesaki-test-srv-0209 --service-name pipeline
+        echo "aws proton wait service-created"
+        aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} wait service-created \
+        --service-name pipeline
+
+ # path指定で特定のファイルが操作された場合以外はupdateにしたい
+    # - name: proton update service instance
+    #   id: proton_update_service_instance
+    #   run: |
+    #     echo "aws proton update-service-instance"
+    #     pwd && ls -al && cat rendered_service.yaml        
+    #     aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} update-service-instance  \
+    #     --deployment-type CURRENT_VERSION \
+    #     --name tesaki-test-srv-0209 \
+    #     --service-name pipeline \
+    #     --spec "file://rendered_service.yaml"
+
+    #     echo "aws proton wait service-instance-deployed"
+    #     aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} wait service-instance-deployed \
+    #     --name tesaki-test-srv-0209 --service-name pipeline
 
 
 
