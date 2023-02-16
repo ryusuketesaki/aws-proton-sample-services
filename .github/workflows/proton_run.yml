@@ -223,8 +223,8 @@ jobs:
         --name pipeline \
         --branchName main \
         --spec "file://rendered_service.yaml" \
-        --templateName load-balanced-fargate-svc-no-pipeline\
-        --templateMajorVersion 1.2
+        --templateName "load-balanced-fargate-svc-no-pipeline" \
+        --templateMajorVersion 1
 
         echo "aws proton wait service-created"
         aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} wait service-created \
