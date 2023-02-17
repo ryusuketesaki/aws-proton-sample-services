@@ -206,24 +206,24 @@ jobs:
 
 ## first build
 # path指定で特定のファイルが操作された場合を初回実行とみなしてcreate serviceしたい if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    - name: post_build
-      id: post_build
-      run: |
-        yq w ./.github/workflows/service.yaml 'instances[*].spec.image' \${{ env.image_id }} > rendered_service.yaml
-        # service.yamlのうち直前のbuildコマンドで作成したIMAGE_IDを更新
-        pwd && ls -al && cat rendered_service.yaml
+    # - name: post_build
+    #   id: post_build
+    #   run: |
+    #     yq w ./.github/workflows/service.yaml 'instances[*].spec.image' \${{ env.image_id }} > rendered_service.yaml
+    #     # service.yamlのうち直前のbuildコマンドで作成したIMAGE_IDを更新
+    #     pwd && ls -al && cat rendered_service.yaml
 
-    - name: proton create service instance
-      id: proton_create_service_instance
-      # path指定で特定のファイルが操作された場合を初回実行とみなしてcreate serviceしたい if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        echo "aws proton create-service"
-        pwd && ls -al && cat rendered_service.yaml
-        aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} create-service  \
-        --name "pipeline" \
-        --spec "file://rendered_service.yaml" \
-        --template-name "load-balanced-fargate-svc-no-pipeline" \
-        --template-major-version "1"
+    # - name: proton create service instance
+    #   id: proton_create_service_instance
+    #   # path指定で特定のファイルが操作された場合を初回実行とみなしてcreate serviceしたい if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    #   run: |
+    #     echo "aws proton create-service"
+    #     pwd && ls -al && cat rendered_service.yaml
+    #     aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} create-service  \
+    #     --name "pipeline" \
+    #     --spec "file://rendered_service.yaml" \
+    #     --template-name "load-balanced-fargate-svc-no-pipeline" \
+    #     --template-major-version "1"
 
 ## first build
 
