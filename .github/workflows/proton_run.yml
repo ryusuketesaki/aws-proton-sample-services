@@ -203,13 +203,12 @@ jobs:
         docker push $ECR_REGISTRY/$IMAGE_REPO_NAME:$IMAGE_TAG
         docker push $ECR_REGISTRY/$IMAGE_REPO_NAME:latest
         echo "image_id=$ECR_REGISTRY/$IMAGE_REPO_NAME:$IMAGE_TAG" >> $GITHUB_ENV
-  
+
+# path指定で特定のファイルが操作された場合を初回実行とみなしてcreate serviceしたい if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     - name: post_build
       id: post_build
       run: |
-        aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} get-service --name pipeline | jq -r .service.spec > service.yaml
-        # protonからサービスの情報を取得。作業用として、service.yamlに書き出す
-        yq w service.yaml 'instances[*].spec.image' \${{ env.image_id }} > rendered_service.yaml
+        yq w ./.github/workflows/service.yaml 'instances[*].spec.image' \${{ env.image_id }} > rendered_service.yaml
         # service.yamlのうち直前のbuildコマンドで作成したIMAGE_IDを更新
         pwd && ls -al && cat rendered_service.yaml
 
@@ -218,10 +217,9 @@ jobs:
       # path指定で特定のファイルが操作された場合を初回実行とみなしてcreate serviceしたい if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         echo "aws proton create-service"
-        pwd && ls -al && cat rendered_service.yaml        
+        pwd && ls -al && cat rendered_service.yaml
         aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} create-service  \
         --name "pipeline" \
-        --branch-name "main" \
         --spec "file://rendered_service.yaml" \
         --template-name "load-balanced-fargate-svc-no-pipeline" \
         --template-major-version "1"
@@ -229,6 +227,17 @@ jobs:
         echo "aws proton wait service-created"
         aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} wait service-created \
         --service-name "pipeline"
+
+ # path指定で特定のファイルが操作された場合以外はupdateにしたい
+    # - name: update_build
+    #   id: update_build
+    #   run: |
+    #     aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} get-service --name pipeline | jq -r .service.spec > service.yaml
+    #     # protonからサービスの情報を取得。作業用として、service.yamlに書き出す
+    #     yq w service.yaml 'instances[*].spec.image' \${{ env.image_id }} > rendered_service.yaml
+    #     # service.yamlのうち直前のbuildコマンドで作成したIMAGE_IDを更新
+    #     pwd && ls -al && cat rendered_service.yaml
+
 
  # path指定で特定のファイルが操作された場合以外はupdateにしたい
     # - name: proton update service instance
