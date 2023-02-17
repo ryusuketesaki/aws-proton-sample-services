@@ -224,9 +224,9 @@ jobs:
         --template-name "load-balanced-fargate-svc-no-pipeline" \
         --template-major-version "1"
 
-        echo "aws proton wait service-created"
-        aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} wait service-created \
-        --service-name "pipeline"
+ #       echo "aws proton wait service-created"
+ #       aws proton --region ${{ needs.get-deployment-data.outputs.target_region }} wait service-created \
+ #       --service-name "pipeline"
 
  # path指定で特定のファイルが操作された場合以外はupdateにしたい
     # - name: update_build
