@@ -1,0 +1,13 @@
+piVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: aws_proton_sample_services
+  annotations:
+    github.com/project-slug: ryusuketesaki/aws-proton-sample-services
+    # TechDocsを有効にする場合は以下を有効にする
+    # dir:の内容は catalog.info.yamlから見た mkdocs.yamlのフォルダ
+    # backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  owner: guests
+  lifecycle: experimental
